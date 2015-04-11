@@ -1,0 +1,129 @@
+<html>
+<head>
+<title>WEBtic Redirector Service</title>
+<script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
+<style>
+#flash {
+  width:100%;
+  margin-left: auto;
+  margin-top: auto;
+  padding-top:4px;
+  padding-bottom:4px;
+  background-color: lightgreen;
+  font-size: 1.2em;
+  -moz-border-radius: 8px;
+  -webkit-border-radius: 8px;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: bold;
+
+}
+
+h1
+{
+  color: white;
+  background-color: #0078E7;
+  padding: 4px;
+  padding-left: 14px;
+  -moz-border-radius: 8px;
+  -webkit-border-radius: 8px;
+  border-radius: 8px;
+  font-family: Lucida, "Lucida Sans", "Lucida Grande", sans-serif;
+  letter-spacing: 0.1em;
+}
+
+textarea {
+   font-family: Menlo, "Andale Mono", Monaco, monospace;
+   font-size: inherit;
+}
+
+body {
+  padding-left: 2em;
+  padding-right: 2em;
+}
+</style>
+<script>
+
+function createCookie(name,value,days) {
+	if (days) {
+		var date = new Date();
+		date.setTime(date.getTime()+(days*24*60*60*1000));
+		var expires = "; expires="+date.toGMTString();
+	}
+	else var expires = "";
+	document.cookie = name+"="+value+expires+"; path=/";
+}
+
+function readCookie(name) {
+	var nameEQ = name + "=";
+	var ca = document.cookie.split(';');
+	for(var i=0;i < ca.length;i++) {
+		var c = ca[i];
+		while (c.charAt(0)==' ') c = c.substring(1,c.length);
+		if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+	}
+	return null;
+}
+
+function eraseCookie(name) {
+	createCookie(name,"",-1);
+}
+
+
+$( document ).ready(function() {
+
+  c=readCookie('flash_message')
+  if (c)
+  {
+    $("#flash").html(c);
+    $("#flash").show();
+
+    setTimeout(function() {
+      $("#flash").fadeOut("fast", function () {
+      $("#flash").remove();
+    }); }, 1000);
+
+    eraseCookie('flash_message');
+  }
+
+  $(window).keypress(function(event) {
+      console.log(event.which);
+      if (!(event.which == 115 && event.ctrlKey) && !(event.which == 19) && !(event.which == 115 && event.metaKey)) return true;
+      $("#save_button").click();
+      event.preventDefault();
+      return false;
+  });
+
+  // http://stackoverflow.com/questions/6637341/use-tab-to-indent-in-textarea
+  // allow tab in the textarea to work
+  $(document).delegate('#editor', 'keydown', function(e) {
+    var keyCode = e.keyCode || e.which;
+
+    if (keyCode == 9) {
+      e.preventDefault();
+      var start = $(this).get(0).selectionStart;
+      var end = $(this).get(0).selectionEnd;
+
+      // set textarea value to: text before caret + tab + text after caret
+      $(this).val($(this).val().substring(0, start)
+                  + "\t"
+                  + $(this).val().substring(end));
+
+      // put caret at right position again
+      $(this).get(0).selectionStart =
+      $(this).get(0).selectionEnd = start + 1;
+    }
+  });
+});
+</script>
+<body>
+<h1>Redirector! Editor</h1>
+  <div style="display: none" id="flash">information message</div>
+    <form class="pure-form pure-form-stacked" method="POST">
+	     <textarea id="editor" name="redirects" style="width: 100%; height: 80%" >{{content}}</textarea>
+       <button id="save_button" style="margin-left: 50%;" type="submit" class="pure-button pure-button-primary">Save</button>
+    </form>
+  </div>
+</body>
+</html>
