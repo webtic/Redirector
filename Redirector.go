@@ -26,7 +26,7 @@ func ReadConfig() {
 		log.Println("Cannot read config ", Config)
 		f, err := os.OpenFile(Config, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 		if err != nil {
-			log.Println("Cannot create config %s", Config)
+			log.Println("Cannot create config ", Config)
 		} else {
 			log.Println("Created empy config ", Config)
 			defer f.Close()
